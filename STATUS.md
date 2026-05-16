@@ -9,7 +9,7 @@ phase: Phase 1
 started: 2026-05-16
 last_updated: 2026-05-16
 summary: New Relic for social media creators — observability, not just analytics
-current_focus: Weekend MVP — Instagram dashboard + alerts + shareable media kit
+current_focus: Building features — data layer, dashboard UI, media kit, rate intelligence
 -->
 
 ---
@@ -45,13 +45,37 @@ Build Instagram dashboard with time-series engagement view, baseline alerting, a
 
 **Time:** 2h
 
+### 2026-05-16 — Session 2
+**Done:**
+- [x] Scaffolded Next.js 15 (App Router) + TypeScript + Tailwind — build passing, zero errors
+- [x] Installed all dependencies: Clerk, Supabase, Recharts, Resend, React Email, date-fns
+- [x] Created .env.local + .env.example with all placeholder keys
+- [x] Set up Supabase client (anon + service role)
+- [x] Set up Clerk middleware — /dashboard protected, / and /[handle] public
+- [x] Created all TypeScript types: Creator, CreatorMetrics, Alert, MediaKit
+- [x] Created full folder structure: app routes, components, lib stubs
+- [x] Landing page with dark theme, headline, handle input
+- [x] Dashboard page + layout (auth guard, mock KPIs)
+- [x] Public media kit page at /[handle]
+- [x] API route stubs: /api/sync, /api/creator, /api/alerts
+- [x] Components: KPICard, EngagementChart, AlertConfig, MediaKitCard, RateCard, Button, Badge
+- [x] Rate intelligence stub with INR calculator + niche multipliers
+
+**In progress:**
+- [ ] Data layer: Supabase DB schema (migrations) + Instagram ingestion
+- [ ] Dashboard UI: real chart with time-series data, KPI wiring
+- [ ] Media kit: full public page with audience quality score
+- [ ] Rate intelligence: complete benchmarking logic
+
+**Time:** ~3h (Session 2)
+
 ---
 
 ## Pending Tasks
 
 ### Phase 1 — Weekend MVP
 - [ ] Check Instagram Basic Display API access + apply — est: 1h
-- [ ] Scaffold Next.js project with Tailwind — est: 2h
+- [x] Scaffold Next.js project with Tailwind — DONE
 - [ ] Build Instagram data ingestion (connect handle → pull metrics) — est: 3h
 - [ ] Build time-series dashboard UI (7d / 30d / 90d) — est: 4h
 - [ ] Build alerting system (email when engagement drops) — est: 3h
@@ -82,6 +106,7 @@ Build Instagram dashboard with time-series engagement view, baseline alerting, a
 | Date | Session | Hours | Cumulative |
 |---|---|---|---|
 | 2026-05-16 | Brainstorm + Research + Setup | 2h | 2h |
+| 2026-05-16 | Next.js scaffold + full project structure | 3h | 5h |
 
 ---
 
