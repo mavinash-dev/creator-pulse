@@ -4,12 +4,12 @@
 <!-- DASHBOARD_META
 name: CreatorPulse
 slug: creator-pulse
-status: Active
+status: Hold
 phase: Phase 1
 started: 2026-05-16
 last_updated: 2026-05-16
 summary: New Relic for social media creators — observability, not just analytics
-current_focus: Phase 1 MVP feature-complete — wiring credentials + deploy
+current_focus: ON HOLD — rethinking core value prop and trust problem before continuing
 -->
 
 ---
@@ -18,12 +18,18 @@ current_focus: Phase 1 MVP feature-complete — wiring credentials + deploy
 **Phase 1** — Weekend MVP
 
 ## Status
-`Active`
+`Hold`
 
 ---
 
 ## Current Focus
-Build Instagram dashboard with time-series engagement view, baseline alerting, and shareable media kit URL.
+ON HOLD — paused to rethink before building further.
+
+## Why Paused
+- **Trust problem:** Why would creators fill in a form for a platform they've never heard of?
+- **Value problem:** Instagram already shows creators their own analytics. What's genuinely new here?
+- **Direction question:** Media kit needs creator buy-in upfront — no clear hook to get that first.
+- Need to answer: what do creators get on day 1 that they can't get anywhere else, with zero effort on their part?
 
 ---
 
