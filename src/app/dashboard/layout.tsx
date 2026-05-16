@@ -54,7 +54,7 @@ export default async function DashboardLayout({
   children: React.ReactNode
 }) {
   // Auth guard: skipped in dev, enforced in production
-  if (process.env.NODE_ENV !== 'development') {
+  if (process.env.NEXT_PUBLIC_SKIP_AUTH !== 'true') {
     const { auth } = await import('@clerk/nextjs/server')
     const { redirect } = await import('next/navigation')
     const { userId } = await auth()

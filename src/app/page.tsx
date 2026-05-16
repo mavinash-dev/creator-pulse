@@ -14,11 +14,11 @@ export default function LandingPage() {
   const [handle, setHandle] = useState('')
   const router = useRouter()
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault()
     const cleaned = handle.replace(/^@/, '').trim()
     if (cleaned) {
-      router.push('/dashboard')
+      router.push(`/dashboard?handle=${encodeURIComponent(cleaned)}`)
     }
   }
 
@@ -34,20 +34,12 @@ export default function LandingPage() {
           </div>
           <span className="text-sm font-semibold text-[#FAFAFA] tracking-tight">CreatorPulse</span>
         </div>
-        <div className="flex items-center gap-3">
-          <Link
-            href="/sign-in"
-            className="text-sm text-[#737373] hover:text-[#FAFAFA] transition-colors"
-          >
-            Sign in
-          </Link>
-          <Link
-            href="/sign-up"
-            className="text-sm font-medium bg-[#3B82F6] hover:bg-blue-500 text-white rounded-lg px-3 py-1.5 transition-colors"
-          >
-            Get started
-          </Link>
-        </div>
+        <Link
+          href="/dashboard"
+          className="text-sm font-medium bg-[#3B82F6] hover:bg-blue-500 text-white rounded-lg px-3 py-1.5 transition-colors"
+        >
+          Open dashboard →
+        </Link>
       </nav>
 
       {/* Hero */}

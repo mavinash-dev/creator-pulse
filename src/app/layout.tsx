@@ -36,7 +36,7 @@ export default async function RootLayout({
     </html>
   )
 
-  if (process.env.NODE_ENV === 'development') return html
+  if (process.env.NEXT_PUBLIC_SKIP_AUTH === 'true') return html
 
   // Production: lazy-load Clerk so the key is never validated in dev
   const { ClerkProvider } = await import('@clerk/nextjs')
