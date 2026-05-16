@@ -1,108 +1,198 @@
 'use client'
 
 import { useState } from 'react'
-import Button from '@/components/ui/Button'
-import Badge from '@/components/ui/Badge'
 import type { Alert } from '@/lib/types'
 
-// TODO: Replace with real data fetched from /api/alerts
-const MOCK_ALERTS: Omit<Alert, 'creator_id' | 'last_triggered_at'>[] = [
+interface AlertConfigProps {
+  creatorId: string
+  alerts: Alert[]
+  onSave: (alerts: Alert[]) => void
+}
+
+interface AlertRow {
+  type: Alert['type']
+  label: string
+  description?: string
+  hasSlider?: boolean
+  sliderMin?: number
+  sliderMax?: number
+  sliderDefault?: number
+  sliderUnit?: string
+}
+
+const ALERT_ROWS: AlertRow[] = [
   {
-    id: '1',
     type: 'engagement_drop',
-    threshold: 20,
-    email: 'you@example.com',
-    is_active: true,
+    label: 'Engagement drop alert',
+    hasSlider: true,
+    sliderMin: 10,
+    sliderMax: 50,
+    sliderDefault: 20,
+    sliderUnit: '%',
   },
   {
-    id: '2',
     type: 'follower_stall',
-    threshold: 7,
-    email: 'you@example.com',
-    is_active: false,
+    label: 'Follower stall alert',
+    description: 'Triggers if <0.1% growth in 7 days',
   },
   {
-    id: '3',
     type: 'post_spike',
-    threshold: 50,
-    email: 'you@example.com',
-    is_active: true,
+    label: 'Post spike alert',
+    description: 'Triggers when a post outperforms by 2×',
+  },
+  {
+    type: 'weekly_digest',
+    label: 'Weekly digest email',
   },
 ]
 
-const ALERT_LABELS: Record<Alert['type'], string> = {
-  engagement_drop: 'Engagement drop',
-  follower_stall: 'Follower growth stall',
-  post_spike: 'Post reach spike',
+function buildInitialState(
+  alertRows: AlertRow[],
+  existingAlerts: Alert[],
+  creatorId: string
+): Alert[] {
+  return alertRows.map((row) => {
+    const existing = existingAlerts.find((a) => a.type === row.type)
+    if (existing) return existing
+    return {
+      id: `local-${row.type}`,
+      creator_id: creatorId,
+      type: row.type,
+      threshold: row.sliderDefault ?? 0,
+      email: '',
+      is_active: false,
+      last_triggered_at: null,
+    }
+  })
 }
 
-const ALERT_DESCRIPTIONS: Record<Alert['type'], string> = {
-  engagement_drop: 'Alert when engagement rate drops by more than threshold %',
-  follower_stall: 'Alert when no new followers in threshold days',
-  post_spike: 'Alert when a post performs threshold % above your average',
-}
+export default function AlertConfig({ creatorId, alerts, onSave }: AlertConfigProps) {
+  const [localAlerts, setLocalAlerts] = useState<Alert[]>(() =>
+    buildInitialState(ALERT_ROWS, alerts, creatorId)
+  )
+  const [saved, setSaved] = useState(false)
 
-export default function AlertConfig() {
-  const [alerts, setAlerts] = useState(MOCK_ALERTS)
-
-  function toggleAlert(id: string) {
-    setAlerts((prev) =>
-      prev.map((a) => (a.id === id ? { ...a, is_active: !a.is_active } : a))
+  function toggleAlert(type: Alert['type']) {
+    setLocalAlerts((prev) =>
+      prev.map((a) => (a.type === type ? { ...a, is_active: !a.is_active } : a))
     )
-    // TODO: PATCH /api/alerts with updated is_active value
+    setSaved(false)
+  }
+
+  function setThreshold(type: Alert['type'], threshold: number) {
+    setLocalAlerts((prev) =>
+      prev.map((a) => (a.type === type ? { ...a, threshold } : a))
+    )
+    setSaved(false)
+  }
+
+  function handleSave() {
+    onSave(localAlerts)
+    setSaved(true)
   }
 
   return (
-    <div className="bg-surface border border-border rounded-xl p-5">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-sm font-medium text-foreground">Alert Configuration</h2>
-        <Button size="sm" variant="secondary" disabled>
-          + Add alert
-        </Button>
+    <div className="bg-[#141414] border border-[#262626] rounded-lg p-5">
+      <div className="flex items-center justify-between mb-5">
+        <div>
+          <h2 className="text-sm font-medium text-[#FAFAFA]">Alert Configuration</h2>
+          <p className="text-xs text-[#737373] mt-0.5">
+            Get notified when your metrics move
+          </p>
+        </div>
       </div>
 
       <div className="space-y-3">
-        {alerts.map((alert) => (
-          <div
-            key={alert.id}
-            className="flex items-center justify-between p-3 bg-background border border-border rounded-lg"
-          >
-            <div className="flex flex-col gap-1">
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-foreground">
-                  {ALERT_LABELS[alert.type]}
-                </span>
-                <Badge variant={alert.is_active ? 'active' : 'inactive'}>
-                  {alert.is_active ? 'Active' : 'Paused'}
-                </Badge>
-              </div>
-              <p className="text-xs text-muted">
-                {ALERT_DESCRIPTIONS[alert.type].replace(
-                  'threshold',
-                  String(alert.threshold)
-                )}
-              </p>
-            </div>
+        {ALERT_ROWS.map((row) => {
+          const alert = localAlerts.find((a) => a.type === row.type)!
 
-            {/* Toggle switch */}
-            <button
-              onClick={() => toggleAlert(alert.id)}
-              aria-label={`Toggle ${ALERT_LABELS[alert.type]}`}
-              className={[
-                'relative inline-flex h-5 w-9 flex-shrink-0 rounded-full border-2 border-transparent transition-colors',
-                'focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-1 focus:ring-offset-background',
-                alert.is_active ? 'bg-accent' : 'bg-border',
-              ].join(' ')}
+          return (
+            <div
+              key={row.type}
+              className="bg-[#0A0A0A] border border-[#262626] rounded-lg p-4"
             >
-              <span
-                className={[
-                  'pointer-events-none inline-block h-4 w-4 rounded-full bg-white shadow transform transition-transform',
-                  alert.is_active ? 'translate-x-4' : 'translate-x-0',
-                ].join(' ')}
-              />
-            </button>
-          </div>
-        ))}
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-[#FAFAFA]">{row.label}</p>
+                  {row.description && (
+                    <p className="text-xs text-[#737373] mt-0.5">{row.description}</p>
+                  )}
+
+                  {row.hasSlider && alert.is_active && (
+                    <div className="mt-3">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-xs text-[#737373]">Threshold</span>
+                        <span className="text-xs font-mono text-[#FAFAFA]">
+                          {alert.threshold}{row.sliderUnit ?? ''}
+                        </span>
+                      </div>
+                      <input
+                        type="range"
+                        min={row.sliderMin}
+                        max={row.sliderMax}
+                        value={alert.threshold}
+                        onChange={(e) =>
+                          setThreshold(row.type, Number(e.target.value))
+                        }
+                        className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+                        style={{
+                          background: `linear-gradient(to right, #3B82F6 0%, #3B82F6 ${
+                            (((alert.threshold ?? row.sliderDefault ?? 20) - (row.sliderMin ?? 10)) /
+                              ((row.sliderMax ?? 50) - (row.sliderMin ?? 10))) *
+                            100
+                          }%, #262626 ${
+                            (((alert.threshold ?? row.sliderDefault ?? 20) - (row.sliderMin ?? 10)) /
+                              ((row.sliderMax ?? 50) - (row.sliderMin ?? 10))) *
+                            100
+                          }%, #262626 100%)`,
+                        }}
+                      />
+                      <div className="flex justify-between mt-1">
+                        <span className="text-xs text-[#737373]">{row.sliderMin}{row.sliderUnit}</span>
+                        <span className="text-xs text-[#737373]">{row.sliderMax}{row.sliderUnit}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Toggle switch */}
+                <button
+                  onClick={() => toggleAlert(row.type)}
+                  aria-label={`Toggle ${row.label}`}
+                  aria-checked={alert.is_active}
+                  role="switch"
+                  className={[
+                    'relative inline-flex h-5 w-9 flex-shrink-0 rounded-full border-2 border-transparent',
+                    'transition-colors duration-200 ease-in-out',
+                    'focus:outline-none focus:ring-2 focus:ring-[#3B82F6] focus:ring-offset-1 focus:ring-offset-[#0A0A0A]',
+                    alert.is_active ? 'bg-[#3B82F6]' : 'bg-[#262626]',
+                  ].join(' ')}
+                >
+                  <span
+                    className={[
+                      'pointer-events-none inline-block h-4 w-4 rounded-full bg-white shadow',
+                      'transform transition-transform duration-200 ease-in-out',
+                      alert.is_active ? 'translate-x-4' : 'translate-x-0',
+                    ].join(' ')}
+                  />
+                </button>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      <div className="mt-5 flex items-center justify-between">
+        {saved && (
+          <p className="text-xs text-[#22C55E]">Saved successfully</p>
+        )}
+        {!saved && <div />}
+        <button
+          onClick={handleSave}
+          className="bg-[#3B82F6] hover:bg-blue-500 text-white text-sm font-medium rounded-lg px-4 py-2 transition-colors"
+        >
+          Save alerts
+        </button>
       </div>
     </div>
   )

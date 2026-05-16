@@ -1,41 +1,65 @@
 interface KPICardProps {
   label: string
-  value: string
-  /** Percentage delta vs. previous period. Positive = up, negative = down, 0 = neutral */
-  delta: number
-  suffix?: string
+  value: string | number
+  delta?: number
+  deltaLabel?: string
+  unit?: string
+  isMonospace?: boolean
 }
 
-export default function KPICard({ label, value, delta, suffix = '' }: KPICardProps) {
-  const isPositive = delta > 0
-  const isNeutral = delta === 0
+export default function KPICard({
+  label,
+  value,
+  delta,
+  deltaLabel = 'vs last 7 days',
+  unit,
+  isMonospace = true,
+}: KPICardProps) {
+  const hasDelta = delta !== undefined && delta !== null
+  const isPositive = hasDelta && delta > 0
+  const isNeutral = hasDelta && delta === 0
 
   const deltaColor = isNeutral
-    ? 'text-muted'
+    ? 'text-[#737373]'
     : isPositive
-    ? 'text-green-400'
-    : 'text-red-400'
+    ? 'text-[#22C55E]'
+    : 'text-[#EF4444]'
 
   const arrow = isNeutral ? '—' : isPositive ? '↑' : '↓'
 
   return (
-    <div className="bg-surface border border-border rounded-xl p-5 flex flex-col gap-3">
-      <p className="text-sm text-muted">{label}</p>
-      <p className="font-metric text-3xl font-semibold text-foreground">
-        {value}
-        {suffix && <span className="text-xl ml-0.5">{suffix}</span>}
+    <div className="bg-[#141414] border border-[#262626] rounded-lg p-4 flex flex-col gap-2">
+      <p className="text-xs font-medium text-[#737373] uppercase tracking-wider">
+        {label}
       </p>
-      {/* Delta badge */}
-      <p className={`text-sm font-medium ${deltaColor} flex items-center gap-1`}>
-        <span>{arrow}</span>
-        {!isNeutral && (
-          <span>
-            {Math.abs(delta).toFixed(1)}%{' '}
-            <span className="text-muted font-normal">vs last 30d</span>
-          </span>
+
+      <div className="flex items-baseline gap-1">
+        <p
+          className={[
+            'text-2xl font-semibold text-[#FAFAFA] leading-none',
+            isMonospace ? 'font-mono' : 'font-sans',
+          ].join(' ')}
+        >
+          {value}
+        </p>
+        {unit && (
+          <span className="text-sm text-[#737373] font-mono">{unit}</span>
         )}
-        {isNeutral && <span className="text-muted font-normal">No change</span>}
-      </p>
+      </div>
+
+      {hasDelta && (
+        <p className={`text-xs font-medium flex items-center gap-1 ${deltaColor}`}>
+          <span className="text-sm leading-none">{arrow}</span>
+          {!isNeutral ? (
+            <>
+              <span className="font-mono">{Math.abs(delta).toFixed(1)}%</span>
+              <span className="text-[#737373] font-normal">{deltaLabel}</span>
+            </>
+          ) : (
+            <span className="text-[#737373] font-normal">No change</span>
+          )}
+        </p>
+      )}
     </div>
   )
 }

@@ -9,7 +9,7 @@ phase: Phase 1
 started: 2026-05-16
 last_updated: 2026-05-16
 summary: New Relic for social media creators — observability, not just analytics
-current_focus: Building features — data layer, dashboard UI, media kit, rate intelligence
+current_focus: Phase 1 MVP feature-complete — wiring credentials + deploy
 -->
 
 ---
@@ -61,13 +61,30 @@ Build Instagram dashboard with time-series engagement view, baseline alerting, a
 - [x] Components: KPICard, EngagementChart, AlertConfig, MediaKitCard, RateCard, Button, Badge
 - [x] Rate intelligence stub with INR calculator + niche multipliers
 
-**In progress:**
-- [ ] Data layer: Supabase DB schema (migrations) + Instagram ingestion
-- [ ] Dashboard UI: real chart with time-series data, KPI wiring
-- [ ] Media kit: full public page with audience quality score
-- [ ] Rate intelligence: complete benchmarking logic
-
 **Time:** ~3h (Session 2)
+
+### 2026-05-16 — Session 3
+**Done:**
+- [x] Supabase PostgreSQL schema — creators, creator_metrics, alerts, media_kits tables with RLS + Clerk JWT policies
+- [x] Instagram API client with deterministic mock data (same handle → same numbers via djb2 hash)
+- [x] `src/lib/db.ts` — typed Supabase query helpers (getCreatorByHandle, getCreatorMetrics, getAlerts, etc.)
+- [x] `/api/sync` — POST syncs handle → upserts creator + inserts metrics snapshot + creates media kit
+- [x] `/api/creator` — GET returns creator + 30d metrics; POST upserts creator
+- [x] `/api/alerts` — GET/POST/DELETE alert config per creator
+- [x] `KPICard` — metric + delta + JetBrains Mono numbers + green/red trend arrows
+- [x] `EngagementChart` — dark Recharts LineChart with baseline reference line, custom tooltip, 7d/30d/90d ranges
+- [x] `AlertConfig` — 4 alert types (engagement drop + slider, follower stall, post spike, weekly digest)
+- [x] `DashboardClient` — full client component: range tabs, metric toggle, mock time-series, KPI grid, chart, alerts, rate card
+- [x] Dashboard layout — sidebar nav + top nav (Clerk UserButton) + mobile bottom nav
+- [x] Landing page — dark hero, handle input → /dashboard, 3 feature pills, social proof
+- [x] `rates.ts` — full INR rate calculator (CPM ₹150 base, ER multipliers, niche multipliers, ±20% bands)
+- [x] `RateCard` component — Post/Story/Reel/Brand Collab rows in JetBrains Mono green, toggleable on media kit
+- [x] `MediaKitCard` — full brand-facing card: profile, 4-metric grid, audience quality score (0–100) with progress bar, rate card, watermark
+- [x] Public `/[handle]` page — server-rendered, no auth, deterministic mock, OG/Twitter metadata
+- [x] `Badge` component — platform variants (instagram/youtube/tiktok) with colors
+- [x] Build: zero TypeScript errors, zero ESLint errors across all 8 routes
+
+**Time:** ~4h (Session 3)
 
 ---
 
@@ -76,11 +93,12 @@ Build Instagram dashboard with time-series engagement view, baseline alerting, a
 ### Phase 1 — Weekend MVP
 - [ ] Check Instagram Basic Display API access + apply — est: 1h
 - [x] Scaffold Next.js project with Tailwind — DONE
-- [ ] Build Instagram data ingestion (connect handle → pull metrics) — est: 3h
-- [ ] Build time-series dashboard UI (7d / 30d / 90d) — est: 4h
-- [ ] Build alerting system (email when engagement drops) — est: 3h
-- [ ] Build shareable media kit page (`/[handle]`) — est: 3h
-- [ ] Add rate benchmarking logic (India-specific) — est: 2h
+- [x] Build Instagram data ingestion (connect handle → pull metrics) — DONE (mock + real stubs)
+- [x] Build time-series dashboard UI (7d / 30d / 90d) — DONE
+- [x] Build alerting system (email when engagement drops) — DONE (UI + API; email send on deploy)
+- [x] Build shareable media kit page (`/[handle]`) — DONE
+- [x] Add rate benchmarking logic (India-specific) — DONE
+- [ ] Wire real credentials (Clerk, Supabase, Resend, Instagram API) — est: 1h
 - [ ] Deploy to Vercel + domain setup — est: 1h
 
 ### Phase 2 — Month 1–2
@@ -107,6 +125,7 @@ Build Instagram dashboard with time-series engagement view, baseline alerting, a
 |---|---|---|---|
 | 2026-05-16 | Brainstorm + Research + Setup | 2h | 2h |
 | 2026-05-16 | Next.js scaffold + full project structure | 3h | 5h |
+| 2026-05-16 | Data layer + Dashboard UI + Media Kit + Rate Intelligence | 4h | 9h |
 
 ---
 

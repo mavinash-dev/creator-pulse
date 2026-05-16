@@ -6,6 +6,7 @@ export interface Creator {
   bio: string
   niche: string
   profile_pic_url: string
+  user_id: string | null
   created_at: string
   last_synced_at: string
 }
@@ -25,7 +26,7 @@ export interface CreatorMetrics {
 export interface Alert {
   id: string
   creator_id: string
-  type: 'engagement_drop' | 'follower_stall' | 'post_spike'
+  type: 'engagement_drop' | 'follower_stall' | 'post_spike' | 'weekly_digest'
   threshold: number
   email: string
   is_active: boolean
