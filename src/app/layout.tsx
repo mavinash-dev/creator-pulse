@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
-import { ClerkProvider } from '@clerk/nextjs'
 import './globals.css'
 
 const inter = Inter({
@@ -24,18 +23,22 @@ export const metadata: Metadata = {
   ),
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  return (
-    <ClerkProvider>
-      <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
-        <body className="bg-background text-foreground antialiased">
-          {children}
-        </body>
-      </html>
-    </ClerkProvider>
+  const html = (
+    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
+      <body className="bg-background text-foreground antialiased">
+        {children}
+      </body>
+    </html>
   )
+
+  if (process.env.NODE_ENV === 'development') return html
+
+  // Production: lazy-load Clerk so the key is never validated in dev
+  const { ClerkProvider } = await import('@clerk/nextjs')
+  return <ClerkProvider>{html}</ClerkProvider>
 }

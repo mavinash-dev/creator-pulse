@@ -1,18 +1,25 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import type { NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
 
-const isProtectedRoute = createRouteMatcher(['/dashboard(.*)'])
+// DEV: plain pass-through — no Clerk key needed, all routes open
+// PROD: swap back to clerkMiddleware (see comment below) once Clerk keys are in .env
+export function middleware(_req: NextRequest) {
+  return NextResponse.next()
+}
 
-export default clerkMiddleware(async (auth, req) => {
-  if (isProtectedRoute(req)) {
-    await auth.protect()
-  }
-})
+/*
+ * PRODUCTION version — replace the above with this once CLERK_SECRET_KEY is set:
+ *
+ * import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+ * const isProtectedRoute = createRouteMatcher(['/dashboard(.*)'])
+ * export default clerkMiddleware(async (auth, req) => {
+ *   if (isProtectedRoute(req)) await auth.protect()
+ * })
+ */
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files
     '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    // Always run for API routes
     '/(api|trpc)(.*)',
   ],
 }

@@ -1,6 +1,3 @@
-import { auth } from '@clerk/nextjs/server'
-import { UserButton } from '@clerk/nextjs'
-import { redirect } from 'next/navigation'
 import Link from 'next/link'
 
 const NAV_LINKS = [
@@ -56,10 +53,12 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode
 }) {
-  const { userId } = await auth()
-
-  if (!userId) {
-    redirect('/sign-in')
+  // Auth guard: skipped in dev, enforced in production
+  if (process.env.NODE_ENV !== 'development') {
+    const { auth } = await import('@clerk/nextjs/server')
+    const { redirect } = await import('next/navigation')
+    const { userId } = await auth()
+    if (!userId) redirect('/sign-in')
   }
 
   return (
@@ -90,16 +89,8 @@ export default async function DashboardLayout({
           ))}
         </div>
 
-        {/* Right side: user button */}
-        <div className="flex items-center gap-3">
-          <UserButton
-            appearance={{
-              elements: {
-                avatarBox: 'h-7 w-7',
-              },
-            }}
-          />
-        </div>
+        {/* Right side: user avatar placeholder (replaced by Clerk UserButton once keys are set) */}
+        <div className="h-7 w-7 rounded-full bg-[#3B82F6] flex items-center justify-center text-xs font-bold text-white">A</div>
       </nav>
 
       {/* Body: sidebar (md+) + main content */}
