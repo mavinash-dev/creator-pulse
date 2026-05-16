@@ -80,6 +80,16 @@
 
 ---
 
+## Turning Auth On (when ready)
+
+Auth is currently disabled via `NEXT_PUBLIC_SKIP_AUTH=true`. No login required anywhere.
+
+To enable Clerk auth in the future — change in **two places**, no code changes needed:
+1. `.env.local` → `NEXT_PUBLIC_SKIP_AUTH=false`
+2. Vercel dashboard → Environment Variables → `NEXT_PUBLIC_SKIP_AUTH=false`
+
+---
+
 ## Key Decisions Already Made
 
 - **No fintech** — No trust infrastructure, no compliance overhead, stay focused

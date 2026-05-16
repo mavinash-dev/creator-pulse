@@ -137,3 +137,4 @@ Build Instagram dashboard with time-series engagement view, baseline alerting, a
 | 2026-05-16 | India-first | Unique GST/regional pain, no good local competitor for creator side |
 | 2026-05-16 | Reach over revenue | 2-3yr exit target — footfall is the asset, not profit |
 | 2026-05-16 | Free core product | Viral loop: every media kit shared = product discovery |
+| 2026-05-16 | Auth skipped for now (open beta/testing mode) | `NEXT_PUBLIC_SKIP_AUTH=true` in .env.local and Vercel env vars. To enable auth: set to `false` in both places — no code changes needed. |
